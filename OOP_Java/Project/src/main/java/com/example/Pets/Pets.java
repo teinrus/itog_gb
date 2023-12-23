@@ -1,4 +1,4 @@
-package com.example.Animal;
+package com.example.Pets;
 
 import com.example.Animal;
 

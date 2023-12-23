@@ -1,4 +1,4 @@
-package com.example.Animal;
+package com.example.Pets;
 
 public class Hamster extends Pets {
     
