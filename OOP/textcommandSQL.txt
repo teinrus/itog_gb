@@ -1,0 +1,67 @@
+ Создать базу данных "Human Friends" в MySQL с таблицами, соответствующими иерархии из диаграммы классов.
+CREATE DATABASE IF NOT EXISTS HumanFriends;
+
+USE HumanFriends;
+
+CREATE TABLE Pets (
+    ID INT AUTO_INCREMENT PRIMARY KEY,
+    Name VARCHAR(50),
+    Type VARCHAR(50),
+    BirthDate DATE,
+    Commands TEXT
+);
+
+CREATE TABLE PackAnimals (
+    ID INT AUTO_INCREMENT PRIMARY KEY,
+    Name VARCHAR(50),
+    Type VARCHAR(50),
+    BirthDate DATE,
+    Commands TEXT
+);
+
+Заполнить таблицы данными о животных, их командах и датами рождения.
+INSERT INTO Pets (Name, Type, BirthDate, Commands)
+VALUES ('Fido', 'Dog', '2020-01-01', 'Sit, Stay, Fetch'),
+       ('Whiskers', 'Cat', '2019-05-15', 'Sit, Pounce'),
+       ('Hammy', 'Hamster', '2021-03-10', 'Roll, Hide'),
+       
+;
+
+INSERT INTO PackAnimals (Name, Type, BirthDate, Commands)
+VALUES ('Thunder', 'Horse', '2015-07-21', 'Trot, Canter, Gallop'),
+       ('Sandy', 'Camel', '2016-11-03', 'Walk, Carry Load'),
+       ('Eeyore', 'Donkey', '2017-09-18', 'Walk, Carry Load, Bray'),
+      
+;
+Удалить записи о верблюдах и объединить таблицы лошадей и ослов.
+DELETE FROM PackAnimals WHERE Type = 'Camel';
+
+CREATE TABLE Equines AS
+SELECT * FROM PackAnimals WHERE Type = 'Horse'
+UNION
+SELECT * FROM PackAnimals WHERE Type = 'Donkey';
+
+DELETE FROM PackAnimals WHERE Type IN ('Horse', 'Donkey');
+
+Создать новую таблицу для животных в возрасте от 1 до 3 лет и вычислить их возраст с точностью до месяца.
+CREATE TABLE YoungAnimals AS
+SELECT *
+FROM (
+    SELECT *,
+           TIMESTAMPDIFF(MONTH, BirthDate, CURDATE()) AS AgeInMonths
+    FROM Equines
+) AS AgeData
+WHERE AgeInMonths BETWEEN 12 AND 36;
+
+Объединить все созданные таблицы в одну, сохраняя информацию о принадлежности к исходным таблицам.
+CREATE VIEW AllAnimals AS
+SELECT 'Pets' AS Origin, ID, Name, Type, BirthDate, Commands
+FROM Pets
+UNION ALL
+SELECT 'Equines' AS Origin, ID, Name, Type, BirthDate, Commands
+FROM Equines
+UNION ALL
+SELECT 'YoungAnimals' AS Origin, ID, Name, Type, BirthDate, Commands
+FROM YoungAnimals;
+
+
